@@ -1,0 +1,90 @@
+<DOCTYPE html>
+    <html>
+        <head> 
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <title> AudioSpectrum in JS</title>
+        </head>
+        <body>
+            <!-- Div where the audio will show -->
+            <div id="audio-spectrum"></div>
+
+            <!-- Action Buttons -->
+            <input type="button" id="btn-play" value="Play" disabled="disabled"/>
+            <input type="button" id="btn-Pause" value="Pause" disabled="disabled"/>
+            <input type="button" id="btn-Stop" value="Stop" disabled="disabled"/>
+
+            <!-- Load wavesurferscript from CDN -->
+            <script src="https://unpkg.com/wavesurfer.js"></script>
+
+            <script>
+                // Store the buttons in an object
+                var buttons = {
+                play: document.getElementById("btn-play"),
+                pause: document.getElementById("btn-pause"),
+                stop: document.getElementById("btn-stop")
+                };
+
+                //  Created an instance of wave surfer with its configuation
+                var Spectrum = wavesurfer.create({
+                    container: '#audio-spectrum',
+                    progressColor: "#03a9f4"
+                });
+
+                // Handle Play button
+                buttons.play.addEventListener("click", function(){
+                    Spectrum.play();
+
+                    //  Enable/Disable respectively buttons
+                    buttons.stop.disabled = false;
+                    buttons.pause.disabled = false;
+                    buttons.play.disabled = true;
+                }, false);
+
+                // Handle Pause button
+                buttons.pause.addEventListener("click", function(){
+                    Spectrum.pause();
+                
+                // Enable/Disable respectively buttons
+                buttons.pause.disabled = true;
+                buttons.play.disabled = false;
+                }, false);
+
+                // Handle Stop button
+                buttons.stop.addEventListener("click", function(){
+                    Spectrum.stop();
+
+                // Enable/Disable respectively buttons
+                buttons.pause.disabled = true;
+                buttons.play.disabled = false;
+                buttons.stop.disabled = true;
+                }, false);
+
+                // Adding a listener to enable the play button once its ready
+                Spectrum.on('ready', function () {
+                    buttons.play.disabled = false;
+                });
+
+                // Adding a responsive mode (for the resixing of screens)
+                window.addEventListener("resize", function(){
+
+                    // get the current progress according to cursor position
+                    var currentProgress = Spectrum.getCurrentTime() / Spectrum.getDuration();
+
+                    // Reset graph
+                    Spectrum.empty();
+                    Spectrum.drawBuffer();
+
+                    // Set original postion
+                    Spectrum.seekTo(currentProgress);
+
+                    // Enable/Disable respectively buttons
+                    buttons.pause.disabled = true;
+                    buttons.play.disabled = false;
+                    buttons.stop.disabled = false;
+                }, false);
+                
+                //  Load the audio file from my domain
+                Spectrum.load('audio-file.mp3');
+            </script>
+        </body>
+    </html>
